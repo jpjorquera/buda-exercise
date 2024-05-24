@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.routes import spreads
+from app.routes import market
 
 app = FastAPI()
-app.include_router(spreads.router)
+app.include_router(market.router)
