@@ -14,9 +14,3 @@ class ExternalAPIError(Exception):
     def __init__(self, message=EXTERNAL_API_ERROR_MESSAGE):
         self.message = message
         super().__init__(self.message)
-
-
-class InternalServerError(Exception):
-    def __init__(self, message=INTERNAL_SERVER_ERROR_MESSAGE):
-        self.message = message
-        super().__init__(self.message)

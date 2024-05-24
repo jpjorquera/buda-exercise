@@ -10,6 +10,6 @@ async def calculate_spread(market_id: str) -> float:
         min_ask = get_min_ask(asks)
         max_bid = get_max_bid(bids)
         spread = min_ask - max_bid
-        return spread
+        return round(spread, 2)
     except Exception as e:
         raise e

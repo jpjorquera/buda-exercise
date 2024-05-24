@@ -6,6 +6,7 @@ uvicorn app.main:app --reload
 
 ```console
 pytest
+pytest --cov=app
 ```
 
 ```console

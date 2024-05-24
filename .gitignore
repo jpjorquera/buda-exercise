@@ -2,3 +2,6 @@ buda-spread
 __pycache__
 .env
 env
+.coverage
+htmlcov/
+.idea/
