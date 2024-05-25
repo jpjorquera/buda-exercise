@@ -26,6 +26,6 @@ async def obtain_markets_spread():
         markets_spread = dict()
         for market_id in markets_ids:
             markets_spread[market_id] = await calculate_spread(market_id)
-        return markets_spread
+        return {"spreads": markets_spread}
     except Exception as e:
         raise e

@@ -18,6 +18,10 @@ class ErrorResponse(BaseModel):
     detail: str
 
 
+class MarketSpreadsResponse(BaseModel):
+    spreads: dict = Field(..., example={"BTC-CLP": 100, "BTC-COP": 2000, "ETH-CLP": 0})
+
+
 @router.get(
     "/spreads/{market_id}",
     response_model=SpreadResponse,
@@ -47,8 +51,17 @@ async def get_market_spread(
         )
 
 
-@router.get("/spreads")
-async def get_all_markets_spreads():
+@router.get(
+    "/spreads",
+    response_model=MarketSpreadsResponse,
+    responses={
+        500: {"model": ErrorResponse, "description": INTERNAL_SERVER_ERROR_MESSAGE},
+    },
+    tags=["Spread"],
+    summary="All markets spread",
+    description="Calculates the spread for all available markets.",
+)
+async def get_all_markets_spreads() -> MarketSpreadsResponse:
     try:
         markets_spread = await obtain_markets_spread()
         return markets_spread
