@@ -45,3 +45,10 @@ ORDER_BOOK_WITH_BID_HIGHER_THAN_ASK_MOCK = {
         ],
     }
 }
+
+EMPTY_ORDER_BOOK_MOCK = {
+    "order_book": {
+        "asks": [],
+        "bids": [],
+    }
+}

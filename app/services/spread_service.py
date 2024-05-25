@@ -7,6 +7,10 @@ async def calculate_spread(market_id: str) -> float:
         order_book = get_order_book(market_id)
         asks = order_book["asks"]
         bids = order_book["bids"]
+
+        if not asks or not bids:
+            return None
+
         min_ask = get_min_ask(asks)
         max_bid = get_max_bid(bids)
         spread = min_ask - max_bid
