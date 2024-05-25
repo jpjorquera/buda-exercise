@@ -1,5 +1,5 @@
 from fastapi import APIRouter, status, HTTPException, Path
-from app.services.spread_service import calculate_spread
+from app.services.spread_service import calculate_spread, obtain_markets_spread
 from app.utils.errors import (
     INTERNAL_SERVER_ERROR_MESSAGE,
     NOT_FOUND_ERROR_MESSAGE,
@@ -48,6 +48,12 @@ async def get_market_spread(
 
 
 @router.get("/spreads")
-async def get_all_markets_spreads() -> str:
-
-    return "getting all markets"
+async def get_all_markets_spreads():
+    try:
+        markets_spread = await obtain_markets_spread()
+        return markets_spread
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=INTERNAL_SERVER_ERROR_MESSAGE,
+        )

@@ -12,3 +12,11 @@ def get_order_book(market_id: str) -> dict:
     if response.status_code != 200:
         raise ExternalAPIError
     return response.json()["order_book"]
+
+
+def get_all_markets() -> list:
+    markets_url = f"{API_BASE_URL}/markets"
+    response = requests.get(markets_url)
+    if response.status_code != 200:
+        raise ExternalAPIError
+    return response.json()["markets"]

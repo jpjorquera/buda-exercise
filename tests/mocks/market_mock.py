@@ -52,3 +52,32 @@ EMPTY_ORDER_BOOK_MOCK = {
         "bids": [],
     }
 }
+
+MARKETS_MOCK = {
+    "markets": [
+        {
+            "id": "BTC-CLP",
+            "name": "btc-clp",
+            "base_currency": "BTC",
+            "quote_currency": "CLP",
+            "minimum_order_amount": ["0.001", "BTC"],
+            "taker_fee": "0.8",
+            "maker_fee": "0.4",
+            "max_orders_per_minute": 100,
+            "maker_discount_percentage": "0.0",
+            "taker_discount_percentage": "0.0",
+        },
+        {
+            "id": "BTC-COP",
+            "name": "btc-cop",
+            "base_currency": "BTC",
+            "quote_currency": "COP",
+            "minimum_order_amount": ["0.001", "BTC"],
+            "taker_fee": "0.8",
+            "maker_fee": "0.4",
+            "max_orders_per_minute": 100,
+            "maker_discount_percentage": "0.0",
+            "taker_discount_percentage": "0.0",
+        },
+    ]
+}
