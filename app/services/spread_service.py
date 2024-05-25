@@ -1,8 +1,12 @@
-from app.repositories.market_repository import get_all_markets, get_order_book
+from app.repositories.market_repository import (
+    get_all_markets,
+    get_order_book,
+    save_market_spread_alert,
+)
 from app.utils.order_book_utils import get_min_ask, get_max_bid
 
 
-async def calculate_spread(market_id: str) -> float:
+async def calculate_spread(market_id: str, set_alert: bool = False):
     try:
         order_book = get_order_book(market_id)
         asks = order_book["asks"]
@@ -14,9 +18,14 @@ async def calculate_spread(market_id: str) -> float:
         min_ask = get_min_ask(asks)
         max_bid = get_max_bid(bids)
         spread = min_ask - max_bid
-        return round(spread, 2)
+        spread = round(spread, 2)
     except Exception as e:
         raise e
+
+    if set_alert:
+        set_alert_successful = save_market_spread_alert(market_id, spread)
+        return spread, set_alert_successful
+    return spread, None
 
 
 async def obtain_markets_spread():
@@ -29,3 +38,7 @@ async def obtain_markets_spread():
         return {"spreads": markets_spread}
     except Exception as e:
         raise e
+
+
+def set_spread_alert(market_id: str, spread: float):
+    pass

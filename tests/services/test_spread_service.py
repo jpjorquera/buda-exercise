@@ -20,7 +20,7 @@ async def test_calculate_spread_success():
         "app.services.spread_service.get_order_book",
         return_value=ORDER_BOOK_MOCK["order_book"],
     ):
-        spread = await calculate_spread(MARKET_ID_MOCK)
+        spread, alert_message = await calculate_spread(MARKET_ID_MOCK)
         assert spread == expected_spread
 
 
@@ -41,7 +41,7 @@ async def test_calculate_spread_success_with_no_spread():
         "app.services.spread_service.get_order_book",
         return_value=ORDER_BOOK_NO_SPREAD_MOCK["order_book"],
     ):
-        spread = await calculate_spread(MARKET_ID_MOCK)
+        spread, alert_message = await calculate_spread(MARKET_ID_MOCK)
         assert spread == expected_spread
 
 
@@ -52,7 +52,7 @@ async def test_calculate_spread_success_with_negative_spread():
         "app.services.spread_service.get_order_book",
         return_value=ORDER_BOOK_WITH_BID_HIGHER_THAN_ASK_MOCK["order_book"],
     ):
-        spread = await calculate_spread(MARKET_ID_MOCK)
+        spread, alert_message = await calculate_spread(MARKET_ID_MOCK)
         assert spread == expected_spread
 
 

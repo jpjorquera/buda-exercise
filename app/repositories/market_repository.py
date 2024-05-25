@@ -1,5 +1,5 @@
 import requests
-
+import json
 from app.repositories import API_BASE_URL
 from app.utils.errors import ExternalAPIError, OrderBookNotFoundError
 
@@ -20,3 +20,18 @@ def get_all_markets() -> list:
     if response.status_code != 200:
         raise ExternalAPIError
     return response.json()["markets"]
+
+
+def save_market_spread_alert(market_id: str, alert_spread: float) -> bool:
+    file_path = f"./spread_alerts/{market_id}.json"
+    spread_data = {"market_id": market_id, "alert_spread": alert_spread}
+    successful_save = False
+    try:
+        with open(file_path, "w") as file:
+            json.dump(spread_data, file)
+        successful_save = True
+    except Exception as e:
+        # return successful_save
+        print(e)
+        return successful_save
+    return successful_save

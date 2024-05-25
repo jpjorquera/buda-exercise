@@ -1,4 +1,5 @@
-from fastapi import APIRouter, status, HTTPException, Path
+from typing import Optional
+from fastapi import APIRouter, status, HTTPException, Path, Query
 from app.services.spread_service import calculate_spread, obtain_markets_spread
 from app.utils.errors import (
     INTERNAL_SERVER_ERROR_MESSAGE,
@@ -9,9 +10,13 @@ from pydantic import BaseModel, Field
 
 router = APIRouter()
 
+SUCCESSFUL_SAVE_ALERT_MESSAGE = "Alert saved successfully"
+UNSUCCESSFUL_SAVE_ALERT_MESSAGE = "We were unable to save the alert"
+
 
 class SpreadResponse(BaseModel):
     spread: float = Field(..., example=15179.14)
+    alert_message: Optional[str] = Field(..., example=SUCCESSFUL_SAVE_ALERT_MESSAGE)
 
 
 class ErrorResponse(BaseModel):
@@ -24,7 +29,7 @@ class MarketSpreadsResponse(BaseModel):
 
 @router.get(
     "/spreads/{market_id}",
-    response_model=SpreadResponse,
+    response_model=Optional[SpreadResponse],
     responses={
         404: {"model": ErrorResponse, "description": NOT_FOUND_ERROR_MESSAGE},
         500: {"model": ErrorResponse, "description": INTERNAL_SERVER_ERROR_MESSAGE},
@@ -35,11 +40,13 @@ class MarketSpreadsResponse(BaseModel):
                 order book and calculates the spread.",
 )
 async def get_market_spread(
-    market_id: str = Path(..., example="btc-clp")
+    market_id: str = Path(..., example="btc-clp"),
+    set_alert: Optional[bool] = Query(False, alias="setAlert"),
 ) -> SpreadResponse:
     try:
-        spread = await calculate_spread(market_id)
-        return {"spread": spread}
+        spread, set_alert_successful = await calculate_spread(
+            market_id.lower(), set_alert
+        )
     except OrderBookNotFoundError:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=NOT_FOUND_ERROR_MESSAGE
@@ -49,6 +56,14 @@ async def get_market_spread(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=INTERNAL_SERVER_ERROR_MESSAGE,
         )
+
+    if not set_alert:
+        return SpreadResponse(spread=spread, alert_message=None)
+    if set_alert_successful:
+        return SpreadResponse(
+            spread=spread, alert_message=SUCCESSFUL_SAVE_ALERT_MESSAGE
+        )
+    return SpreadResponse(spread=spread, alert_message=UNSUCCESSFUL_SAVE_ALERT_MESSAGE)
 
 
 @router.get(

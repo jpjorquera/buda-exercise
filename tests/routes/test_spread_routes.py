@@ -9,16 +9,22 @@ from unittest.mock import patch
 from tests.mocks.market_mock import INVALID_MARKET_ID_MOCK, MARKET_ID_MOCK
 from tests.mocks.spread_mock import MARKETS_SPREAD_MOCK
 
-MOCK_SPREAD = 100
+MOCK_CALCULATE_SPREAD_RESPONSE = 100, None
 
 client = TestClient(app)
 
 
 def test_get_market_spread_success():
-    with patch("app.routes.spread_routes.calculate_spread", return_value=MOCK_SPREAD):
+    with patch(
+        "app.routes.spread_routes.calculate_spread",
+        return_value=MOCK_CALCULATE_SPREAD_RESPONSE,
+    ):
         response = client.get(f"/spreads/{MARKET_ID_MOCK}")
         assert response.status_code == status.HTTP_200_OK
-        assert response.json() == {"spread": MOCK_SPREAD}
+        assert response.json() == {
+            "spread": MOCK_CALCULATE_SPREAD_RESPONSE[0],
+            "alert_message": MOCK_CALCULATE_SPREAD_RESPONSE[1],
+        }
 
 
 def test_get_market_spread_should_throw_not_found_when_there_is_no_order():
