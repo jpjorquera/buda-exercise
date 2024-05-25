@@ -1,5 +1,5 @@
 from fastapi import APIRouter, status, HTTPException, Path
-from app.services.market_service import calculate_spread
+from app.services.spread_service import calculate_spread
 from app.utils.errors import (
     INTERNAL_SERVER_ERROR_MESSAGE,
     NOT_FOUND_ERROR_MESSAGE,
@@ -19,13 +19,13 @@ class ErrorResponse(BaseModel):
 
 
 @router.get(
-    "/markets/{market_id}/spread",
+    "/spreads/{market_id}",
     response_model=SpreadResponse,
     responses={
         404: {"model": ErrorResponse, "description": NOT_FOUND_ERROR_MESSAGE},
         500: {"model": ErrorResponse, "description": INTERNAL_SERVER_ERROR_MESSAGE},
     },
-    tags=["Market"],
+    tags=["Spread"],
     summary="Market spread",
     description="Given a market ID, this endpoint retrieves the \
                 order book and calculates the spread.",
@@ -45,3 +45,9 @@ async def get_market_spread(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=INTERNAL_SERVER_ERROR_MESSAGE,
         )
+
+
+@router.get("/spreads")
+async def get_all_markets_spreads() -> str:
+
+    return "getting all markets"
