@@ -1,4 +1,14 @@
 from typing import Optional
+from app.routes.messages import (
+    SUCCESSFUL_SAVE_ALERT_MESSAGE,
+    UNSUCCESSFUL_SAVE_ALERT_MESSAGE,
+)
+from app.routes.models import (
+    ErrorResponse,
+    MarketSpreadAlertResponse,
+    MarketSpreadsResponse,
+    SpreadResponse,
+)
 from fastapi import APIRouter, status, HTTPException, Path, Query
 from app.services.spread_service import (
     calculate_spread,
@@ -11,30 +21,12 @@ from app.utils.errors import (
     OrderBookNotFoundError,
     SpreadAlertNotFoundError,
 )
-from pydantic import BaseModel, Field
 
 router = APIRouter()
-
-SUCCESSFUL_SAVE_ALERT_MESSAGE = "Alert saved successfully"
-UNSUCCESSFUL_SAVE_ALERT_MESSAGE = "We were unable to save the alert"
-
-
-class SpreadResponse(BaseModel):
-    spread: float = Field(..., example=15179.14)
-    alert_message: Optional[str] = Field(..., example=SUCCESSFUL_SAVE_ALERT_MESSAGE)
-
-
-class ErrorResponse(BaseModel):
-    detail: str
-
-
-class MarketSpreadsResponse(BaseModel):
-    spreads: dict = Field(..., example={"BTC-CLP": 100, "BTC-COP": 2000, "ETH-CLP": 0})
 
 
 @router.get(
     "/spreads/{market_id}",
-    response_model=Optional[SpreadResponse],
     responses={
         404: {"model": ErrorResponse, "description": NOT_FOUND_ERROR_MESSAGE},
         500: {"model": ErrorResponse, "description": INTERNAL_SERVER_ERROR_MESSAGE},
@@ -73,7 +65,6 @@ async def get_market_spread(
 
 @router.get(
     "/spreads",
-    response_model=MarketSpreadsResponse,
     responses={
         500: {"model": ErrorResponse, "description": INTERNAL_SERVER_ERROR_MESSAGE},
     },
@@ -92,10 +83,19 @@ async def get_all_markets_spreads() -> MarketSpreadsResponse:
         )
 
 
-@router.get("/spreads/{market_id}/alert")
+@router.get(
+    "/spreads/{market_id}/alert",
+    responses={
+        404: {"model": ErrorResponse, "description": NOT_FOUND_ERROR_MESSAGE},
+        500: {"model": ErrorResponse, "description": INTERNAL_SERVER_ERROR_MESSAGE},
+    },
+    tags=["Spread"],
+    summary="Get market spread alert",
+    description="Retrieves a previously saved maket spread alert.",
+)
 async def get_market_spread_alert(
     market_id: str = Path(..., example="btc-clp"),
-):
+) -> MarketSpreadAlertResponse:
     try:
         market_spread_data = get_market_spread_alerts(market_id)
         return market_spread_data
