@@ -6,5 +6,6 @@ env
 htmlcov/
 .idea/
 spread_alerts/*
+.pytest_cache
 
 !spread_alerts/.git-keep
