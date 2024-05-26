@@ -30,8 +30,16 @@ uvicorn app.main:app --reload
 Al tener el servidor corriendo se puede navegar la documentación yendo a:
 
 ```
+http://localhost:8000/redoc
+```
+
+O bien:
+
+```
 http://localhost:8000/docs
 ```
+
+Dependiendo de el formato preferido.
 
 ## Pruebas
 

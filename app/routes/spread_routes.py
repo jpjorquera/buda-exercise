@@ -29,18 +29,31 @@ router = APIRouter()
 @router.get(
     "/spreads/{market_id}",
     responses={
+        200: {
+            "model": Union[SpreadResponse, SpreadResponseWithAlert],
+            "description": "Successful response",
+        },
         404: {"model": ErrorResponse, "description": NOT_FOUND_ERROR_MESSAGE},
         500: {"model": ErrorResponse, "description": INTERNAL_SERVER_ERROR_MESSAGE},
     },
     tags=["Spread"],
     summary="Market spread",
-    description="Given a market ID, this endpoint retrieves the \
-                order book and calculates the spread.",
 )
 async def get_market_spread(
     market_id: str = Path(..., example="btc-clp"),
     set_alert: Optional[bool] = Query(False, alias="setAlert"),
 ) -> Union[SpreadResponse, SpreadResponseWithAlert]:
+    """
+    Retrieve the spread for a specific market given the market ID.
+
+    Parameters:
+    - **market_id** [string]: The ID of the market to calculate the spread.
+    - **setAlert** [boolean]: Optional boolean to set an alert for the market spread.
+
+    Returns:
+    - **spread** [float]: The calculated spread for the market.
+    - **alert_message** [string, Optional]: A message indicating whether setting the alert was successful (only if **setAlert** is True).
+    """
     try:
         if set_alert:
             spread, set_alert_successful = await calculate_spread(
@@ -73,13 +86,23 @@ async def get_market_spread(
 @router.get(
     "/spreads",
     responses={
+        200: {
+            "model": MarketSpreadsResponse,
+            "description": "Successful response",
+        },
         500: {"model": ErrorResponse, "description": INTERNAL_SERVER_ERROR_MESSAGE},
     },
     tags=["Spread"],
     summary="All markets spread",
-    description="Calculates the spread for all available markets.",
 )
 async def get_all_markets_spreads() -> MarketSpreadsResponse:
+    """
+    Calculates the spread for all available markets.
+
+    Returns:
+    - **spreads** [object]: Object containing all the available markets spreads
+        - **{market_id}** [float]: Indicates the spread for the respective {market_id}
+    """
     try:
         markets_spread = await obtain_markets_spread()
         return markets_spread
@@ -93,16 +116,29 @@ async def get_all_markets_spreads() -> MarketSpreadsResponse:
 @router.get(
     "/spreads/{market_id}/alert",
     responses={
+        200: {
+            "model": MarketSpreadAlertResponse,
+            "description": "Successful response",
+        },
         404: {"model": ErrorResponse, "description": NOT_FOUND_ERROR_MESSAGE},
         500: {"model": ErrorResponse, "description": INTERNAL_SERVER_ERROR_MESSAGE},
     },
     tags=["Spread"],
     summary="Get market spread alert",
-    description="Retrieves a previously saved maket spread alert.",
 )
 async def get_market_spread_alert(
     market_id: str = Path(..., example="btc-clp"),
 ) -> MarketSpreadAlertResponse:
+    """
+    Retrieves a previously saved maket spread alert.
+
+    Parameters:
+    - **market_id** [string]: The ID of the market to retrieve alert.
+
+    Returns:
+    - **market_id** [string]: The ID of the market of the retrieved alert.
+    - **spread** [float]: The spread of the alert saved for the corresponding market.
+    """
     try:
         market_spread_data = get_market_spread_alerts(market_id)
         return market_spread_data
