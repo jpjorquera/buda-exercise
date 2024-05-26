@@ -67,5 +67,5 @@ http://localhost:8000/docs
 Para el desarrollo del ejercicio se tuvo algunas consideraciones:
 
 - Al hacer la llamada para obtener el spread ya sea de uno o todos los mercados, se va a envíar `null` cuando el mercado sea válido, pero no haya información en el libro de órdenes suficiente para calcularlo.
-- Para las alertas se consideró que estas debiesen guardarse de forma individual para cada mercado y se agregó la opción de enviar un parámetro a la llamada para indicar que se desea guardar la alerta. Esto fue hecho pensando en que los consumidores en el front posiblemente piensan habilitar una opción para los usuarios a modo de que puedan indicar que desean guardar la alerta.
-- Las alertas serán guardadas dentro de la carpeta `spread_alerts` para simular la persistencia.
+- Para las alertas se consideró que estas debiesen guardarse de forma individual para cada mercado y se agregó la opción de enviar un parámetro a la llamada para indicar que se desea guardar la alerta. Esto fue hecho pensando en que los consumidores en el front puedan habilitar una opción para los usuarios a modo de que puedan indicar que desean guardar la alerta.
+- Las alertas serán guardadas dentro de la carpeta `spread_alerts` para simular la persistencia. Aunque la estructura del repositorio mantiene desacoplada la implementación, en caso de que se desee agregar en el futuro la persistencia sólo debe mantener el contrato.
