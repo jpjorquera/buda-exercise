@@ -89,3 +89,22 @@ async def test_obtain_markets_spread_error():
     ):
         with pytest.raises(ExternalAPIError):
             await obtain_markets_spread()
+
+
+@pytest.mark.asyncio
+async def test_calculate_spread_with_alert():
+    expected_spread = 15097.14
+    expected_set_alert_status = True
+    with patch(
+        "app.services.spread_service.get_order_book",
+        return_value=ORDER_BOOK_MOCK["order_book"],
+    ):
+        with patch(
+            "app.services.spread_service.save_market_spread_alert",
+            return_value=True,
+        ):
+            spread, alert_status = await calculate_spread(
+                MARKET_ID_MOCK, set_alert=True
+            )
+            assert spread == expected_spread
+            assert alert_status == expected_set_alert_status

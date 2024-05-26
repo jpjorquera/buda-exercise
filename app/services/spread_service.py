@@ -38,7 +38,3 @@ async def obtain_markets_spread():
         return {"spreads": markets_spread}
     except Exception as e:
         raise e
-
-
-def set_spread_alert(market_id: str, spread: float):
-    pass

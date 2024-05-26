@@ -1,3 +1,6 @@
+from app.routes.spread_routes import (
+    SUCCESSFUL_SAVE_ALERT_MESSAGE,
+)
 from app.utils.errors import (
     ExternalAPIError,
     OrderBookNotFoundError,
@@ -10,6 +13,7 @@ from tests.mocks.market_mock import INVALID_MARKET_ID_MOCK, MARKET_ID_MOCK
 from tests.mocks.spread_mock import MARKETS_SPREAD_MOCK
 
 MOCK_CALCULATE_SPREAD_RESPONSE = 100, None
+MOCK_CALCULATE_SPREAD_RESPONSE_WITH_SUCCESSFUL_ALERT = 100, True
 
 client = TestClient(app)
 
@@ -60,3 +64,16 @@ def test_get_all_markets_spreads_should_throw_internal_error_when_an_error_occur
     ):
         response = client.get(f"/spreads/{MARKET_ID_MOCK}")
         assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
+
+
+def test_get_market_spread_with_alert_success():
+    with patch(
+        "app.routes.spread_routes.calculate_spread",
+        return_value=MOCK_CALCULATE_SPREAD_RESPONSE_WITH_SUCCESSFUL_ALERT,
+    ):
+        response = client.get(f"/spreads/{MARKET_ID_MOCK}?setAlert=True")
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == {
+            "spread": MOCK_CALCULATE_SPREAD_RESPONSE_WITH_SUCCESSFUL_ALERT[0],
+            "alert_message": SUCCESSFUL_SAVE_ALERT_MESSAGE,
+        }

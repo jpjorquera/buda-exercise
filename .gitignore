@@ -5,3 +5,6 @@ env
 .coverage
 htmlcov/
 .idea/
+spread_alerts/*
+
+!spread_alerts/.git-keep
