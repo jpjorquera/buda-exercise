@@ -22,14 +22,11 @@ client = TestClient(app)
 def test_get_market_spread_success():
     with patch(
         "app.routes.spread_routes.calculate_spread",
-        return_value=MOCK_CALCULATE_SPREAD_RESPONSE,
+        return_value=MOCK_CALCULATE_SPREAD_RESPONSE[0],
     ):
         response = client.get(f"/spreads/{MARKET_ID_MOCK}")
         assert response.status_code == status.HTTP_200_OK
-        assert response.json() == {
-            "spread": MOCK_CALCULATE_SPREAD_RESPONSE[0],
-            "alert_message": MOCK_CALCULATE_SPREAD_RESPONSE[1],
-        }
+        assert response.json() == {"spread": MOCK_CALCULATE_SPREAD_RESPONSE[0]}
 
 
 def test_get_market_spread_should_throw_not_found_when_there_is_no_order():

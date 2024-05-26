@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Union
 from app.routes.messages import (
     SUCCESSFUL_SAVE_ALERT_MESSAGE,
     UNSUCCESSFUL_SAVE_ALERT_MESSAGE,
@@ -8,6 +8,7 @@ from app.routes.models import (
     MarketSpreadAlertResponse,
     MarketSpreadsResponse,
     SpreadResponse,
+    SpreadResponseWithAlert,
 )
 from fastapi import APIRouter, status, HTTPException, Path, Query
 from app.services.spread_service import (
@@ -39,28 +40,34 @@ router = APIRouter()
 async def get_market_spread(
     market_id: str = Path(..., example="btc-clp"),
     set_alert: Optional[bool] = Query(False, alias="setAlert"),
-) -> SpreadResponse:
+) -> Union[SpreadResponse, SpreadResponseWithAlert]:
     try:
-        spread, set_alert_successful = await calculate_spread(
-            market_id.lower(), set_alert
-        )
+        if set_alert:
+            spread, set_alert_successful = await calculate_spread(
+                market_id.lower(), set_alert
+            )
+        else:
+            spread = await calculate_spread(market_id.lower())
     except OrderBookNotFoundError:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=NOT_FOUND_ERROR_MESSAGE
         )
-    except Exception:
+    except Exception as e:
+        print("Raising exc:", e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=INTERNAL_SERVER_ERROR_MESSAGE,
         )
 
     if not set_alert:
-        return SpreadResponse(spread=spread, alert_message=None)
+        return SpreadResponse(spread=spread)
     if set_alert_successful:
-        return SpreadResponse(
+        return SpreadResponseWithAlert(
             spread=spread, alert_message=SUCCESSFUL_SAVE_ALERT_MESSAGE
         )
-    return SpreadResponse(spread=spread, alert_message=UNSUCCESSFUL_SAVE_ALERT_MESSAGE)
+    return SpreadResponseWithAlert(
+        spread=spread, alert_message=UNSUCCESSFUL_SAVE_ALERT_MESSAGE
+    )
 
 
 @router.get(

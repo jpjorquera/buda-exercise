@@ -1,11 +1,14 @@
 from app.routes.messages import SUCCESSFUL_SAVE_ALERT_MESSAGE
 from pydantic import BaseModel, Field
-from typing import Optional
 
 
 class SpreadResponse(BaseModel):
     spread: float = Field(..., example=15179.14)
-    alert_message: Optional[str] = Field(..., example=SUCCESSFUL_SAVE_ALERT_MESSAGE)
+
+
+class SpreadResponseWithAlert(BaseModel):
+    spread: float = Field(..., example=15179.14)
+    alert_message: str = Field(..., example=SUCCESSFUL_SAVE_ALERT_MESSAGE)
 
 
 class ErrorResponse(BaseModel):

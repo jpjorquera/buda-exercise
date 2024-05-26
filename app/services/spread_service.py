@@ -1,3 +1,4 @@
+from typing import Tuple, Union
 from app.repositories.market_repository import (
     get_all_markets,
     get_order_book,
@@ -7,7 +8,9 @@ from app.repositories.market_repository import (
 from app.utils.order_book_utils import get_min_ask, get_max_bid
 
 
-async def calculate_spread(market_id: str, set_alert: bool = False):
+async def calculate_spread(
+    market_id: str, set_alert: bool = False
+) -> Union[float, Tuple[float, bool]]:
     try:
         order_book = get_order_book(market_id)
         asks = order_book["asks"]
@@ -26,7 +29,7 @@ async def calculate_spread(market_id: str, set_alert: bool = False):
     if set_alert:
         set_alert_successful = save_market_spread_alert(market_id, spread)
         return spread, set_alert_successful
-    return spread, None
+    return spread
 
 
 async def obtain_markets_spread():
