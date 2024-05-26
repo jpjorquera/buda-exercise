@@ -1,10 +1,15 @@
 from typing import Optional
 from fastapi import APIRouter, status, HTTPException, Path, Query
-from app.services.spread_service import calculate_spread, obtain_markets_spread
+from app.services.spread_service import (
+    calculate_spread,
+    get_market_spread_alerts,
+    obtain_markets_spread,
+)
 from app.utils.errors import (
     INTERNAL_SERVER_ERROR_MESSAGE,
     NOT_FOUND_ERROR_MESSAGE,
     OrderBookNotFoundError,
+    SpreadAlertNotFoundError,
 )
 from pydantic import BaseModel, Field
 
@@ -80,6 +85,24 @@ async def get_all_markets_spreads() -> MarketSpreadsResponse:
     try:
         markets_spread = await obtain_markets_spread()
         return markets_spread
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=INTERNAL_SERVER_ERROR_MESSAGE,
+        )
+
+
+@router.get("/spreads/{market_id}/alert")
+async def get_market_spread_alert(
+    market_id: str = Path(..., example="btc-clp"),
+):
+    try:
+        market_spread_data = get_market_spread_alerts(market_id)
+        return market_spread_data
+    except SpreadAlertNotFoundError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=NOT_FOUND_ERROR_MESSAGE
+        )
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

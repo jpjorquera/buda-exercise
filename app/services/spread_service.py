@@ -1,6 +1,7 @@
 from app.repositories.market_repository import (
     get_all_markets,
     get_order_book,
+    retrieve_market_spread_alert,
     save_market_spread_alert,
 )
 from app.utils.order_book_utils import get_min_ask, get_max_bid
@@ -36,5 +37,13 @@ async def obtain_markets_spread():
         for market_id in markets_ids:
             markets_spread[market_id] = await calculate_spread(market_id)
         return {"spreads": markets_spread}
+    except Exception as e:
+        raise e
+
+
+def get_market_spread_alerts(market_id: str):
+    try:
+        spread_data = retrieve_market_spread_alert(market_id)
+        return spread_data
     except Exception as e:
         raise e

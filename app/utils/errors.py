@@ -14,3 +14,10 @@ class ExternalAPIError(Exception):
     def __init__(self, message=EXTERNAL_API_ERROR_MESSAGE):
         self.message = message
         super().__init__(self.message)
+
+
+class SpreadAlertNotFoundError(Exception):
+    def __init__(self, market, message=NOT_FOUND_ERROR_MESSAGE):
+        self.market = market
+        self.message = message
+        super().__init__(self.message)
