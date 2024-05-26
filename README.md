@@ -1,6 +1,6 @@
 # Buda Spread Exercise
 
-## Introducción
+## Introducción
 
 Esta implementación del ejercicio para el manejo de los spreads de los distintos mercados fue desarrollada usando Python 3.9 y FastAPI.
 
@@ -23,6 +23,14 @@ Así, se ejecuta el ambiente usando:
 
 ```console
 uvicorn app.main:app --reload
+```
+
+## Documentación de API
+
+Al tener el servidor corriendo se puede navegar la documentación yendo a:
+
+```
+http://localhost:8000/docs
 ```
 
 ## Pruebas
@@ -52,14 +60,6 @@ Luego, se puede ejecutar corriendo:
 
 ```console
 docker run -it -p 8000:8000 buda-spread
-```
-
-## Documentación de API
-
-Al tener el servidor corriendo se puede navegar la documentación yendo a:
-
-```
-http://localhost:8000/docs
 ```
 
 ## Consideraciones
