@@ -1,4 +1,3 @@
-import unittest
 from app.utils.errors import (
     ExternalAPIError,
     OrderBookNotFoundError,
@@ -12,6 +11,7 @@ from app.repositories.market_repository import (
     get_all_markets,
     get_order_book,
     retrieve_market_spread_alert,
+    save_market_spread_alert,
 )
 from tests.mocks.market_mock import MARKET_ID_MOCK, MARKETS_MOCK, ORDER_BOOK_MOCK
 import json
@@ -71,6 +71,18 @@ def test_get_all_markets_unexpected_error():
             get_all_markets()
 
 
+def test_save_market_spread_alert_success():
+    mock_alert_data_str = json.dumps(MARKET_SPREAD_ALERT_MOCK)
+    mock_spread = 100
+    file_open_mock = mock_open(read_data=mock_alert_data_str)
+    with patch("builtins.open", file_open_mock):
+        save_market_result = save_market_spread_alert(MARKET_ID_MOCK, mock_spread)
+        file_open_mock.assert_called_with(
+            f"{ALERTS_FILE_PATH}/{MARKET_ID_MOCK}.json", "w"
+        )
+        assert save_market_result == True
+
+
 def test_get_market_spread_alert_success():
     mock_alert_data_str = json.dumps(MARKET_SPREAD_ALERT_MOCK)
     file_open_mock = mock_open(read_data=mock_alert_data_str)
@@ -79,7 +91,7 @@ def test_get_market_spread_alert_success():
         file_open_mock.assert_called_with(
             f"{ALERTS_FILE_PATH}/{MARKET_ID_MOCK}.json", "r"
         )
-        unittest.TestCase().assertEqual(market_spread_data, MARKET_SPREAD_ALERT_MOCK)
+        assert market_spread_data == MARKET_SPREAD_ALERT_MOCK
 
 
 def test_get_market_spread_alert_error_when_no_alert_found():
